@@ -1,0 +1,136 @@
+<div class="card">
+  <!-- <h5 class="card-header">Tarea de Arranque</h5> -->
+  <div class="card-body border-top-0">
+    <h5 class="mb-3">Parámetros de Ejecución</h5>
+    <form novalidate [formGroup]="myform" (ngSubmit)="getResuts()">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label for="exampleFormControlInput1" class="form-label"
+              >Seleccione los archivos:</label
+            >
+            <ng-multiselect-dropdown
+              [placeholder]="'Seleccione el archivo(s)'"
+              [settings]="filesSettings"
+              [data]="filesList"
+              formControlName="archivos"
+              (onSelect)="onItemSelect($event)"
+              (onSelectAll)="onSelectAll($event)"
+            >
+            </ng-multiselect-dropdown>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="numeroPalabras"
+              >Número de palabras más frecuentes</label
+            >
+            <input
+              type="number"
+              class="form-control"
+              id="numeroPalabras"
+              aria-describedby="numeroPalabrasHelp"
+              formControlName="numeroPalabras"
+              [ngClass]="{
+                'is-invalid':
+                  myform.get('numeroPalabras')?.invalid &&
+                  (myform.get('numeroPalabras')?.dirty ||
+                    myform.get('numeroPalabras')?.touched),
+                'is-valid':
+                  myform.get('numeroPalabras')?.valid &&
+                  (myform.get('numeroPalabras')?.dirty ||
+                    myform.get('numeroPalabras')?.touched)
+              }"
+            />
+            <div class="invalid-feedback">Campo Requerido.</div>
+          </div>
+        </div>
+        <div class="col-md-12">
+          <div class="mb-3">
+            <label for="reto" class="form-label">Retos</label>
+            <select
+              id="reto"
+              class="form-select"
+              formControlName="reto"
+              [ngClass]="{
+                'is-invalid':
+                  myform.get('reto')?.invalid &&
+                  (myform.get('reto')?.dirty || myform.get('reto')?.touched),
+                'is-valid':
+                  myform.get('reto')?.valid &&
+                  (myform.get('reto')?.dirty || myform.get('reto')?.touched)
+              }"
+            >
+              <option [ngValue]=""></option>
+              <option *ngFor="let reto of retos" [ngValue]="reto.method">
+                {{ reto.text }}
+              </option>
+            </select>
+            <div class="invalid-feedback">Campo Requerido.</div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-auto">
+          <button
+            type="submit"
+            class="btn btn-success mb-3"
+            [disabled]="!myform.valid"
+          >
+            Mostrar Resultados
+          </button>
+        </div>
+      </div>
+    </form>
+    <div class="row" *ngIf="resultados !== ''">
+      <h5 class="mb-3">Resultados:</h5>
+      <div class="col-12">
+        <ng-container *ngIf="myform.value.reto === 'v3primero' || myform.value.reto === 'v3segundo' || myform.value.reto === 'v3tercero'">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Archivo</th>
+                <th scope="col">Número de Palabras</th>
+              </tr>
+            </thead>
+            <ng-container *ngFor="let archivo of resultados.paths; let index = index">
+              <tbody>
+                <tr>
+                  <th scope="row">{{ index + 1 }}</th>
+                  <td>{{ archivo.path }}</td>
+                  <td>{{ archivo.count }} Palabras</td>
+                </tr>
+                <tr *ngIf="myform.value.reto === 'v3segundo' || myform.value.reto === 'v3tercero'">
+                  <td colspan="3">
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th scope="col">#</th>
+                          <th scope="col">Palabra</th>
+                          <th scope="col">Número de veces que aparece</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let item of archivo.words | keyvalue; let index = index">
+                          <th scope="row">{{ index + 1 }}</th>
+                          <td>{{ item.key }}</td>
+                          <td>{{ item.value }} Palabras</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+              </tbody>
+              <angular-tag-cloud [data]="archivo.wordCloudData" *ngIf="myform.value.reto === 'v3tercero'"></angular-tag-cloud>
+            </ng-container>
+          </table>
+        </ng-container>
+      </div>
+    </div>
+    <div class="row d-flex justify-content-center" *ngIf="showLoading">
+      <div class="lds-dual-ring mb-3"></div>
+      <h5 class="text-center mb-3">Obteniendo Resultados</h5>
+    </div>
+  </div>
+</div>

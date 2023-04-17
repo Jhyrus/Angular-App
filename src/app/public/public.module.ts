@@ -5,10 +5,11 @@ import { CommonModule } from '@angular/common';
 
 import { PublicRoutingModule } from './public-routing.module';
 import { TareaArranqueComponent } from './components/tarea-arranque/tarea-arranque.component';
+import { TallerUnoComponent } from './components/taller-uno/taller-uno.component';
 
 
 @NgModule({
-  declarations: [TareaArranqueComponent],
+  declarations: [TareaArranqueComponent, TallerUnoComponent],
   imports: [
     CommonModule,
     PublicRoutingModule,
@@ -18,7 +19,8 @@ import { TareaArranqueComponent } from './components/tarea-arranque/tarea-arranq
     TareaArranqueService
   ],
   exports:[
-    TareaArranqueComponent
+    TareaArranqueComponent,
+    TallerUnoComponent
   ]
 })
 export class PublicModule { }

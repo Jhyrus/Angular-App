@@ -6,6 +6,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { TypeaheadModule } from 'ngx-bootstrap/typeahead';
 import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 import { TagCloudComponent } from 'angular-tag-cloud-module';
+import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @NgModule({
   declarations: [],
@@ -16,7 +18,9 @@ import { TagCloudComponent } from 'angular-tag-cloud-module';
     AccordionModule.forRoot(),
     TypeaheadModule.forRoot(),
     NgMultiSelectDropDownModule.forRoot(),
-    TagCloudComponent
+    TagCloudComponent,
+    BsDatepickerModule.forRoot(),
+    FontAwesomeModule
   ],
   exports: [
     CommonModule,
@@ -25,7 +29,10 @@ import { TagCloudComponent } from 'angular-tag-cloud-module';
     AccordionModule,
     TypeaheadModule,
     NgMultiSelectDropDownModule,
-    TagCloudComponent
+    TagCloudComponent,
+    BsDatepickerModule,
+    FontAwesomeModule
   ],
 })
-export class SharedModule { }
+export class SharedModule {
+}

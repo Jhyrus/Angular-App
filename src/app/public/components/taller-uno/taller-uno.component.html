@@ -1,0 +1,214 @@
+<accordion class="accordion" [closeOthers]="true">
+  <accordion-group heading="¿Cuál es el estado con mayor tráfico de botes en un periodo dado?">
+    <form [formGroup]="ejercicio1" (ngSubmit)="obtenerEjercicio1()">
+      <div class="row">
+        <div class="mb-3">
+          <label for="exampleInputEmail1" class="form-label">Defina el periodo</label>
+          <input type="text" placeholder="Daterangepicker" class="form-control" bsDaterangepicker [bsConfig]="{ isAnimated: true, rangeInputFormat : 'DD-MM-YYYY' }" [bsValue]="bsInlineRangeValue" [minDate]="minDate" [maxDate]="maxDate" formControlName="rango">
+        </div>
+        <div class="mb-3">
+          <button type="submit" class="btn btn-primary" [disabled]="!ejercicio1.valid">Enviar</button>
+        </div>
+      </div>
+    </form>
+    <div class="row">
+      <div class="col-auto">
+        <p *ngIf="ejercicio1Resultados && Object.keys(ejercicio1Resultados).length === 0">
+          No existen registros validos del {{ ejercicio1.value.rango[0] | date:'d \'de\' MMMM \'de\' yyyy':'':'es' }} al {{ ejercicio1.value.rango[1] | date:'d \'de\' MMMM \'de\' yyyy':'':'es' }}
+        </p>
+        <p *ngIf="ejercicio1Resultados && Object.keys(ejercicio1Resultados).length > 0">
+          El estado <span class="fw-bold">{{ ejercicio1Resultados._id.Zone }}</span> es el estado con mayor tráfico de botes del {{ ejercicio1.value.rango[0] | date:'d \'de\' MMMM \'de\' yyyy':'':'es' }} al {{ ejercicio1.value.rango[1] | date:'d \'de\' MMMM \'de\' yyyy':'':'es' }} con {{ ejercicio1Resultados.count }} registros
+        </p>
+      </div>
+    </div>
+  </accordion-group>
+  <accordion-group heading="¿Cuál es el tipo de carga más común por estado, en un periodo dado?">
+    <form [formGroup]="ejercicio2" (ngSubmit)="obtenerEjercicio2()">
+      <div class="row mb-3">
+        <div class="col-auto">
+          <label for="exampleInputEmail1" class="form-label">Estado</label>
+          <select formControlName="estado" class="form-select" aria-label="Default select example">
+            <option selected></option>
+            <option *ngFor="let estado of estados">{{ estado }}</option>
+          </select>
+        </div>
+        <div class="col-4">
+          <label for="exampleInputEmail1" class="form-label">Defina el periodo</label>
+          <input type="text" placeholder="Daterangepicker" class="form-control" bsDaterangepicker [bsConfig]="{ isAnimated: true, rangeInputFormat : 'DD-MM-YYYY' }" [bsValue]="bsInlineRangeValue" [minDate]="minDate" [maxDate]="maxDate" formControlName="rango">
+        </div>
+      </div>
+      <div class="row mb-3">
+        <div class="col-auto">
+          <button type="submit" class="btn btn-primary" [disabled]="!ejercicio2.valid">Enviar</button>
+        </div>
+      </div>
+    </form>
+    <div class="row">
+      <div class="col-auto">
+        <p *ngIf="ejercicio2Resultados && Object.keys(ejercicio2Resultados).length === 0">
+          No existen registros para el estado <span class="fw-bold">{{ ejercicio2.value.estado }}</span> del {{ ejercicio2.value.rango[0] | date:'d \'de\' MMMM \'de\' yyyy':'':'es' }} al {{ ejercicio2.value.rango[1] | date:'d \'de\' MMMM \'de\' yyyy':'':'es' }}
+        </p>
+        <p *ngIf="ejercicio2Resultados && Object.keys(ejercicio2Resultados).length > 0">
+          El tipo de carga mas comun para el estado <span class="fw-bold">{{ ejercicio2.value.estado }}</span> es {{ ejercicio2Resultados[0]._id.Cargo }} del {{ ejercicio2.value.rango[0] | date:'d \'de\' MMMM \'de\' yyyy':'':'es' }} al {{ ejercicio2.value.rango[1] | date:'d \'de\' MMMM \'de\' yyyy':'':'es' }} con {{ ejercicio2Resultados[0].trips }} registros
+        </p>
+      </div>
+    </div>
+  </accordion-group>
+  <accordion-group heading="¿Qué tanto afectó la pandemia al tráfico de embarcaciones teniendo en cuenta el número de embarcaciones por mes en cada estado en años anteriores?">
+    <form [formGroup]="ejercicio3" (ngSubmit)="obtenerEjercicio3()">
+      <div class="row">
+        <div class="mb-3">
+          <label for="exampleInputEmail1" class="form-label">Defina el periodo</label>
+          <input type="text" placeholder="Daterangepicker" class="form-control" bsDaterangepicker [bsConfig]="{ isAnimated: true, rangeInputFormat : 'DD-MM-YYYY' }" [bsValue]="bsInlineRangeValue" [minDate]="minDate" [maxDate]="maxDate" formControlName="rango">
+        </div>
+        <div class="mb-3">
+          <button type="submit" class="btn btn-primary" [disabled]="!ejercicio3.valid">Enviar</button>
+        </div>
+      </div>
+    </form>
+    <div class="row" *ngIf="ejercicio3Resultados && ejercicio3Resultados.viajesPorEstado && Object.keys(ejercicio3Resultados.viajesPorEstado)">
+      <div class="col-12">
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th class="bg-dark text-white">Estado</th>
+                <th *ngFor="let fecha of ejercicio3Resultados.fechas">{{ fecha }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let estado of Object.keys(ejercicio3Resultados.viajesPorEstado)">
+                <td class="fw-bold">{{ estado }}</td>
+                <td *ngFor="let fecha of ejercicio3Resultados.fechas">{{ ejercicio3Resultados.viajesPorEstado[estado][fecha] || 0 }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </accordion-group>
+  <accordion-group heading="¿Cómo es la distribución geográfica, en un periodo dado, de las embarcaciones?">
+    <form [formGroup]="ejercicio4" (ngSubmit)="obtenerEjercicio4()">
+      <div class="row">
+        <div class="mb-3">
+          <label for="exampleInputEmail1" class="form-label">Defina el periodo</label>
+          <input type="text" placeholder="Daterangepicker" class="form-control" bsDaterangepicker [bsConfig]="{ isAnimated: true, rangeInputFormat : 'DD-MM-YYYY' }" [bsValue]="bsInlineRangeValue" [minDate]="minDate" [maxDate]="maxDate" formControlName="rango">
+        </div>
+        <div class="mb-3">
+          <button type="submit" class="btn btn-primary" [disabled]="!ejercicio4.valid">Enviar</button>
+        </div>
+      </div>
+    </form>
+    <div class="row d-flex justify-content-center">
+      <div class="col-12">
+        <p class="h3 text-center mb-0 mt-3" *ngIf="ejercicio4Resultados">Mapa de calor de viajes realizados por estado del {{ ejercicio2.value.rango[0] | date:'d \'de\' MMMM \'de\' yyyy':'':'es' }} al {{ ejercicio2.value.rango[1] | date:'d \'de\' MMMM \'de\' yyyy':'':'es' }}</p>
+        <div id="heatmap" class="px-5" style="width: 100%; height: auto;"></div>
+      </div>
+    </div>
+  </accordion-group>
+  <accordion-group heading="¿Existe alguna relación entre el día de la semana y el tipo de carga en cada estado?¿La relación cambia por año?">
+    <form [formGroup]="ejercicio5" (ngSubmit)="obtenerEjercicio5()">
+      <div class="row">
+        <div class="mb-3">
+          <label for="exampleInputEmail1" class="form-label">Defina el periodo</label>
+          <input type="text" placeholder="Daterangepicker" class="form-control" bsDaterangepicker [bsConfig]="{ isAnimated: true, rangeInputFormat : 'DD-MM-YYYY' }" [bsValue]="bsInlineRangeValue" [minDate]="minDate" [maxDate]="maxDate" formControlName="rango">
+        </div>
+        <div class="mb-3">
+          <button type="submit" class="btn btn-primary" [disabled]="!ejercicio5.valid">Enviar</button>
+        </div>
+      </div>
+    </form>
+    <div class="row" *ngIf="ejercicio5Resultados">
+      <div class="col-12">
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th class="bg-dark text-white">Estado</th>
+                <th *ngFor="let columna of ejercicio5Resultados.columnas">{{ columna }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let estado of ejercicio5Resultados.estados">
+                <td class="fw-bold">{{ estado }}</td>
+                <td *ngFor="let columna of ejercicio5Resultados.columnas">{{ ejercicio5Resultados.datosAgrupados[columna][estado] || 0 }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </accordion-group>
+  <accordion-group heading="¿Existe alguna relación entre la población de un estado y el número de viajes que se realizan en él?">
+    <form [formGroup]="ejercicio6" (ngSubmit)="obtenerEjercicio6()">
+      <div class="row">
+        <div class="mb-3">
+          <label for="exampleInputEmail1" class="form-label">Defina el periodo</label>
+          <input type="text" placeholder="Daterangepicker" class="form-control" bsDaterangepicker [bsConfig]="{ isAnimated: true, rangeInputFormat : 'DD-MM-YYYY' }" [bsValue]="bsInlineRangeValue" [minDate]="minDate" [maxDate]="maxDate" formControlName="rango">
+        </div>
+        <div class="mb-3">
+          <button type="submit" class="btn btn-primary" [disabled]="!ejercicio6.valid">Enviar</button>
+        </div>
+      </div>
+    </form>
+    <div class="row" *ngIf="ejercicio6Resultados && ejercicio6Resultados.coeficiente">
+      <div class="col-12">
+        <p>{{ 'El coeficiente de correlación de Spearman es: ' + ejercicio6Resultados.coeficiente}}</p>
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Estado</th>
+                <th>Viajes</th>
+                <th>Población</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let estado of Object.keys(ejercicio6Resultados.datosAgrupados)">
+                <td>{{ estado }}</td>
+                <td><fa-icon [icon]="faShip"></fa-icon> {{ ejercicio6Resultados.datosAgrupados[estado].viajes }}</td>
+                <td><fa-icon [icon]="faPeopleGroup"></fa-icon> {{ ejercicio6Resultados.datosAgrupados[estado].poblacion }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </accordion-group>
+  <accordion-group heading="¿Existe alguna relación entre el PIB (Producto Interno Bruto) de un estado y el número de viajes que se realizan en él?">
+    <form [formGroup]="ejercicio7" (ngSubmit)="obtenerEjercicio7()">
+      <div class="row">
+        <div class="mb-3">
+          <label for="exampleInputEmail1" class="form-label">Defina el periodo</label>
+          <input type="text" placeholder="Daterangepicker" class="form-control" bsDaterangepicker [bsConfig]="{ isAnimated: true, rangeInputFormat : 'DD-MM-YYYY' }" [bsValue]="bsInlineRangeValue" [minDate]="minDate" [maxDate]="maxDate" formControlName="rango">
+        </div>
+        <div class="mb-3">
+          <button type="submit" class="btn btn-primary" [disabled]="!ejercicio7.valid">Enviar</button>
+        </div>
+      </div>
+    </form>
+    <div class="row" *ngIf="ejercicio7Resultados && ejercicio7Resultados.coeficiente">
+      <div class="col-12">
+        <p>{{ 'El coeficiente de correlación de Spearman es: ' + ejercicio7Resultados.coeficiente}}</p>
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Estado</th>
+                <th>Viajes</th>
+                <th>PIB (Producto Interno Bruto)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let estado of Object.keys(ejercicio7Resultados.datosAgrupados)">
+                <td>{{ estado }}</td>
+                <td><fa-icon [icon]="faShip"></fa-icon> {{ ejercicio7Resultados.datosAgrupados[estado].viajes }}</td>
+                <td><fa-icon [icon]="faMoneyBillTrendUp"></fa-icon> {{ ejercicio7Resultados.datosAgrupados[estado].pib }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </accordion-group>
+</accordion>

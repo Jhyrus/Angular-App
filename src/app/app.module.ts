@@ -8,7 +8,10 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { HttpClientModule } from '@angular/common/http';
+import { registerLocaleData } from '@angular/common';
+import localeEs from '@angular/common/locales/es';
 
+registerLocaleData(localeEs);
 
 @NgModule({
   declarations: [

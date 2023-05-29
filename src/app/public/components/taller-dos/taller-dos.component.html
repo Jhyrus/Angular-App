@@ -1,0 +1,247 @@
+<div class="position-relative" class="card p-4 border-top-0">
+  <div class="bg-white bg-opacity-75 w-100 d-flex justify-content-center align-items-center position-absolute top-0 h-100" style="z-index: 999;" *ngIf="showLoading">
+    <div class="lds-dual-ring mb-3"></div>
+    <h5 class="text-center mb-3">Obteniendo Resultados</h5>
+  </div>
+  <form [formGroup]="form" (ngSubmit)="obtenerPolaridad()">
+    <h4 class="my-3">Parámetros de busqueda</h4>
+    <div class="row mb-3">
+      <div class="col-md-12">
+        <div class="mb-3">
+          <label for="exampleFormControlInput1" class="form-label">Seleccione los usuarios:</label>
+          <ng-multiselect-dropdown [placeholder]="'Seleccione el usuario(s)'" [settings]="filesSettings" [data]="usuarios" formControlName="usuarios">
+          </ng-multiselect-dropdown>
+        </div>
+      </div>
+      <div class="col-md-12">
+        <div class="mb-3">
+          <label for="exampleFormControlInput1" class="form-label">Seleccione los temas:</label>
+          <ng-multiselect-dropdown [placeholder]="'Seleccione el tema(s)'" [settings]="filesSettings" [data]="temas" formControlName="temas">
+          </ng-multiselect-dropdown>
+        </div>
+      </div>
+      <div class="col-4">
+        <label for="exampleInputEmail1" class="form-label">Defina el periodo</label>
+        <input type="text" placeholder="Daterangepicker" class="form-control" bsDaterangepicker [bsConfig]="{ isAnimated: true, rangeInputFormat : 'DD-MM-YYYY' }" [bsValue]="bsInlineRangeValue" [minDate]="minDate" [maxDate]="maxDate" formControlName="rango">
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-auto">
+        <button type="submit" class="btn btn-primary" [disabled]="!form.valid">Enviar</button>
+      </div>
+    </div>
+  </form>
+  <div *ngIf="polaridadRes && polaridadRes.analisis_por_tweet">
+    <h4 class="my-3">Resultados</h4>
+
+    <p class="my-2">Se han analizado {{ polaridadRes?.analisis_por_tweet?.length || 0 }} tweets, y se han obtenido los siguientes resultados de polaridad:</p>
+
+    <div class="d-flex flex-wrap">
+      <span *ngFor="let polaridad of sortPolarity(polaridadRes?.analisis_agregado)" [ngClass]="getBadgeClass(polaridad[0])" class="badge bg-primary rounded-pill me-2 my-1">
+        <fa-icon [icon]="getIcon(polaridad[0])" class="polarity-icon" shake></fa-icon>
+        <span class="polarity-label"> {{ polaridad[0] }}:</span>
+        <span class="polarity-count"> {{ polaridad[1] }}</span>
+      </span>
+    </div>
+    <h5 class="my-3">Análisis por usuario con respecto al tema</h5>
+    <div class="flex justify-content-center overflow-x-auto">
+      <p-organizationChart [value]="data" selectionMode="multiple" [(selection)]="selectedNodes">
+        <ng-template let-node pTemplate="titulo">
+          <div class="p-2 text-center">
+            <div class="fw-bold my-2 h5">{{ node.data.Titulo | titlecase }}</div>
+          </div>
+        </ng-template>
+        <ng-template let-node pTemplate="usuario">
+          <div class="p-2 text-center">
+            <!-- <img [src]="node.data.Avatar" class="mb-3 w-3rem h-3rem" /> -->
+            <fa-icon [icon]="faUserCircle" class="mb-3 w-3rem h-3rem" style="font-size: 2.5em;"></fa-icon>
+            <div class="fw-bold">{{ node.data.Nombre }}</div>
+            <div>{{ node.data.Usuario }}</div>
+          </div>
+        </ng-template>
+        <ng-template let-node pTemplate="tema">
+          <div class="p-2 text-center">
+            <div class="fw-bold my-2">{{ node.data.Tema | titlecase }}</div>
+            <p *ngFor="let polaridad of sortPolarity(node.data.polaridad)" [ngClass]="getBadgeClass(polaridad[0])" class="badge bg-primary rounded-pill me-2 my-1 d-block">
+              <fa-icon [icon]="getIcon(polaridad[0])" class="polarity-icon" shake></fa-icon>
+              <span class="polarity-label"> {{ polaridad[0] }}:</span>
+              <span class="polarity-count"> {{ polaridad[1] }}</span>
+            </p>
+          </div>
+        </ng-template>
+      </p-organizationChart>
+    </div>
+    <!-- {{ polaridadRes | json }} -->
+    <h5 class="my-3">Listado de Tweets</h5>
+    <p-table [value]="polaridadRes.analisis_por_tweet" [paginator]="true" [rows]="5" [rowsPerPageOptions]="[5, 10, 20]">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>
+            <div class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" style="cursor: pointer;" (click)="sortColumn('Fecha')">Fecha <span class="pi" [ngClass]="{'pi-sort-amount-up-alt': sortField === 'Fecha' && sortOrder === 1, 'pi-sort-amount-down': sortField === 'Fecha' && sortOrder === -1}"></span></div>
+          </th>
+          <th>
+            <div class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" style="cursor: pointer;" (click)="sortColumn('Usuario')">Usuario <span class="pi" [ngClass]="{'pi-sort-amount-up-alt': sortField === 'Usuario' && sortOrder === 1, 'pi-sort-amount-down': sortField === 'Usuario' && sortOrder === -1}"></span></div>
+          </th>
+          <th>Tweet</th>
+          <th>
+            <div class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" style="cursor: pointer;" (click)="sortColumn('Tema')">Tema <span class="pi" [ngClass]="{'pi-sort-amount-up-alt': sortField === 'Tema' && sortOrder === 1, 'pi-sort-amount-down': sortField === 'Tema' && sortOrder === -1}"></span></div>
+          </th>
+          <th>Polaridad</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-item>
+        <tr>
+          <td>{{ formatDate(item.Fecha) }}</td>
+          <td>{{ item.Usuario }}</td>
+          <td>
+            <div class="d-flex">
+              <div class="flex-grow-1" style="width: 80%">{{ truncateText(item.Tweet, 10) }}</div>
+              <div class="flex-grow-0" style="width: 20%">
+                <p-button icon="pi pi-search" styleClass="p-button-rounded p-button-success p-button-text p-button-raised" (click)="obtenerTweet(item._id)"></p-button>
+              </div>
+            </div>
+          </td>
+          <td>{{ item.Tema | titlecase }}</td>
+          <td>
+            <div>
+              <span *ngFor="let polaridad of sortPolarity(item.Polaridad)" [ngClass]="getBadgeClass(polaridad[0])" class="badge rounded-pill me-2">
+                <fa-icon [icon]="getIcon(polaridad[0])" shake></fa-icon> {{ polaridad[0] }}: {{ polaridad[1] }}
+              </span>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+
+  </div>
+  <div *ngIf="tweetText">
+    <h5 class="my-3">Análisis del Tweet</h5>
+    <div class="card p-3 mb-3">
+      <div class="card-body">
+        <div class="tweet-header">
+          <!-- <img src="ruta_a_la_imagen_de_perfil" class="tweet-profile-image"> -->
+          <fa-icon [icon]="faUserCircle" class="tweet-profile-image" style="font-size: 2.5em;"></fa-icon>
+          <div class="tweet-user-info">
+            <h5 class="tweet-username">{{ tweetText.Usuario }}</h5>
+            <p class="tweet-handle">@{{ tweetText.Usuario }}</p>
+          </div>
+        </div>
+        <div>
+          <p class="card-text tweet-text">
+            <ng-container *ngFor="let token of tweetText.tokens">
+              <span class="link-dark link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" style="cursor: pointer;" (mouseover)="handleMouseOver(token)" pInputText pTooltip="<span class='small'>{{ token.texto }}<br>Etiqueta: {{ token.etiquetado_gramatical }} <br>Dependencia: {{ token.dependencia_sintactica }}</span>" tooltipPosition="top" [escape]="false">
+                {{ token.texto }}
+              </span>
+            </ng-container>
+          </p>
+        </div>
+        <div class="tweet-footer">
+          <i class="far fa-heart"></i>
+          <i class="far fa-comment"></i>
+          <i class="fas fa-retweet"></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="card p-3 mb-3">
+      <div class="card-body">
+        <div class="tweet-header">
+          <!-- <img src="ruta_a_la_imagen_de_perfil" class="tweet-profile-image"> -->
+          <fa-icon [icon]="faUserCircle" class="tweet-profile-image" style="font-size: 2.5em;"></fa-icon>
+          <div class="tweet-user-info">
+            <h5 class="tweet-username">{{ tweetText.Usuario }}</h5>
+            <p class="tweet-handle">@{{ tweetText.Usuario }}</p>
+          </div>
+        </div>
+        <p class="card-text tweet-text" [innerHTML]="getProcessedText()"></p>
+        <div class="tweet-footer">
+          <i class="far fa-heart"></i>
+          <i class="far fa-comment"></i>
+          <i class="fas fa-retweet"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="polaridadRes && polaridadRes.analisis_por_tweet">
+    <h5 class="my-3">Filtros Adicionales</h5>
+    <form [formGroup]="sectorForm" (ngSubmit)="obtenerTweetsPorSector()">
+      <div class="row d-flex align-items-center mb-3">
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label for="exampleFormControlInput1" class="form-label">Seleccione el sector:</label>
+            <ng-multiselect-dropdown [placeholder]="'Seleccione el sector'" [settings]="filesSettingsSingle" [data]="sectores" formControlName="sector">
+            </ng-multiselect-dropdown>
+          </div>
+        </div>
+        <div class="col-auto">
+          <button type="submit" class="btn btn-primary" [disabled]="!sectorForm.valid">Enviar</button>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div *ngIf="sectorRes">
+    <p-table [value]="sectorRes">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Usuario</th>
+          <th>Genero</th>
+          <th>Sector</th>
+          <th>Profesión</th>
+          <th>Edad</th>
+          <th>Tweets</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-item>
+        <tr>
+          <td>{{ item.Usuario }}</td>
+          <td>{{ item.Genero }}</td>
+          <td>{{ item.Sector }}</td>
+          <td>{{ item.Profesion }}</td>
+          <td>{{ item.Edad }}</td>
+          <td>{{ item.tweets_usuario.length }}</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+  <div *ngIf="polaridadRes && polaridadRes.analisis_por_tweet">
+    <h4 class="my-3"></h4>
+    <form [formGroup]="generoForm" (ngSubmit)="obtenerTweetsPorGenero()">
+      <div class="row d-flex align-items-center mb-3">
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label for="exampleFormControlInput1" class="form-label">Seleccione el género:</label>
+            <ng-multiselect-dropdown [placeholder]="'Seleccione el género'" [settings]="filesSettingsSingle" [data]="generos" formControlName="genero">
+            </ng-multiselect-dropdown>
+          </div>
+        </div>
+        <div class="col-auto">
+          <button type="submit" class="btn btn-primary" [disabled]="!generoForm.valid">Enviar</button>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div *ngIf="generoRes">
+    <p-table [value]="generoRes">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Usuario</th>
+          <th>Genero</th>
+          <th>Sector</th>
+          <th>Profesión</th>
+          <th>Edad</th>
+          <th>Tweets</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-item>
+        <tr>
+          <td>{{ item.Usuario }}</td>
+          <td>{{ item.Genero }}</td>
+          <td>{{ item.Sector }}</td>
+          <td>{{ item.Profesion }}</td>
+          <td>{{ item.Edad }}</td>
+          <td>{{ item.tweets_usuario.length }}</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>

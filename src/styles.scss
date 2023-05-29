@@ -1,10 +1,21 @@
-/* You can add global styles to this file, and also import other style files */
-
-/* Importing Bootstrap SCSS file. */
-@import "./node_modules/bootstrap/scss/bootstrap";
+$primary: #b19cd9;       // Lila pastel
+$secondary: #f9cb9c;     // Melocotón pastel
+$success: #9ad3b5;       // Verde menta pastel
+$info: #96c1e9;          // Azul cielo pastel
+$warning: #f9e79f;       // Amarillo pastel
+$danger: #f5b7b1;        // Rosa pastel
+$light: #e5e8ec;         // Gris claro pastel
+$dark: #7b8788;          // Gris oscuro pastel
+$link: #b19cd9;          // Enlace (puede ser el mismo que $primary)
+@import "../node_modules/bootstrap/scss/bootstrap";
 
 /* Importing Datepicker SCSS file. */
-@import "node_modules/ngx-bootstrap/datepicker/bs-datepicker";
+@import "./node_modules/ngx-bootstrap/datepicker/bs-datepicker";
+
+@import "primeng/resources/themes/lara-light-blue/theme.css";
+@import "primeng/resources/primeng.css";
+@import "primeicons/primeicons.css";
+
 
 .lds-dual-ring {
   display: inline-block;
@@ -32,4 +43,45 @@
   100% {
     transform: rotate(360deg);
   }
+}
+
+.tweet-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.tweet-profile-image {
+  width: 40px;
+  height: auto;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.tweet-username {
+  font-size: 16px;
+  margin-bottom: 0;
+}
+
+.tweet-handle {
+  color: #6c757d;
+  margin-bottom: 0;
+}
+
+.tweet-text {
+  font-size: 14px;
+  line-height: 1.4;
+  margin-bottom: 10px;
+}
+
+.tweet-footer {
+  display: flex;
+  justify-content: space-between;
+  color: #6c757d;
+  font-size: 14px;
+}
+
+.tweet-footer i {
+  cursor: pointer;
+  margin-right: 10px;
 }

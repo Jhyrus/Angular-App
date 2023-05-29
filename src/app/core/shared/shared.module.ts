@@ -8,6 +8,13 @@ import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 import { TagCloudComponent } from 'angular-tag-cloud-module';
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { Ng2GoogleChartsModule } from 'ng2-google-charts';
+import { TreeModule } from 'primeng/tree';
+import { ButtonModule } from 'primeng/button';
+import { OrganizationChartModule } from 'primeng/organizationchart';
+import { TableModule } from 'primeng/table';
+import { PaginatorModule } from 'primeng/paginator';
+import { TooltipModule } from 'primeng/tooltip';
 
 @NgModule({
   declarations: [],
@@ -20,7 +27,14 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
     NgMultiSelectDropDownModule.forRoot(),
     TagCloudComponent,
     BsDatepickerModule.forRoot(),
-    FontAwesomeModule
+    FontAwesomeModule,
+    Ng2GoogleChartsModule,
+    TreeModule,
+    ButtonModule,
+    OrganizationChartModule,
+    TableModule,
+    PaginatorModule,
+    TooltipModule
   ],
   exports: [
     CommonModule,
@@ -31,7 +45,14 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
     NgMultiSelectDropDownModule,
     TagCloudComponent,
     BsDatepickerModule,
-    FontAwesomeModule
+    FontAwesomeModule,
+    Ng2GoogleChartsModule,
+    TreeModule,
+    ButtonModule,
+    OrganizationChartModule,
+    TableModule,
+    PaginatorModule,
+    TooltipModule
   ],
 })
 export class SharedModule {

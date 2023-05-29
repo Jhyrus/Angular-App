@@ -6,6 +6,7 @@ import { TypeaheadMatch } from 'ngx-bootstrap/typeahead';
 import { Object } from 'core-js';
 import { faShip, faPeopleGroup, faMoneyBillTrendUp } from '@fortawesome/free-solid-svg-icons';
 import * as ss from 'simple-statistics';
+import * as d3 from 'd3';
 
 declare var google: any;
 
@@ -165,6 +166,17 @@ export class TallerUnoComponent implements OnInit {
           }
         });
         this.ejercicio4Resultados = response;
+        this.ejercicio4Resultados.geoChartData = {
+          chartType:'GeoChart',
+          dataTable:[
+            ['City', 'Population'],
+            ['Melbourne', 456789]
+          ],
+          options:{
+            'region': 'IT',
+            'displayMode':'markers'
+          }
+        };
         google.charts.setOnLoadCallback(this.dibujarGraficoDeCalor.bind(this, valoresPorEstado));
       },
       (error) => {
@@ -327,6 +339,35 @@ export class TallerUnoComponent implements OnInit {
 
     grafico.draw(google.visualization.arrayToDataTable(datos), opciones);
   }
+
+  // drawMap(): void {
+  //   const svg = d3.select('svg');
+  //   const width = +svg.attr('width');
+  //   const height = +svg.attr('height');
+
+  //   // Define el mapa de USA con sus coordenadas
+  //   const projection = d3.geoAlbersUsa()
+  //     .scale(1200)
+  //     .translate([width / 2, height / 2]);
+
+  //   const path = d3.geoPath()
+  //     .projection(projection);
+
+  //   // Carga los datos de los estados de USA desde un archivo JSON
+  //   d3.json('https://d3js.org/us-10m.v1.json').then((us: any) => {
+
+  //     // Dibuja los estados en el mapa
+  //     svg.append('g')
+  //       .attr('class', 'states')
+  //       .selectAll('path')
+  //       .data(d3.feature(us, us.objects.states).features)
+  //       .enter().append('path')
+  //       .attr('d', path)
+  //       .attr('fill', 'white')
+  //       .attr('stroke', 'black')
+  //       .attr('stroke-width', 0.5);
+  //   });
+  // }
 
   // dibujarGraficoDeCalor2(valoresPorEstado: any) {
   //   let datos: any = [['Estado', 'Viajes', 'Población']];

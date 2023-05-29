@@ -11,6 +11,10 @@ import { HttpClientModule } from '@angular/common/http';
 import { registerLocaleData } from '@angular/common';
 import localeEs from '@angular/common/locales/es';
 
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { fas } from '@fortawesome/free-solid-svg-icons';
+
 registerLocaleData(localeEs);
 
 @NgModule({
@@ -28,4 +32,9 @@ registerLocaleData(localeEs);
   providers: [],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+  constructor() {
+    // Add this line to configure the icons
+    library.add(fas);
+  }
+}

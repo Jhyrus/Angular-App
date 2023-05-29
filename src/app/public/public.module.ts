@@ -6,10 +6,11 @@ import { CommonModule } from '@angular/common';
 import { PublicRoutingModule } from './public-routing.module';
 import { TareaArranqueComponent } from './components/tarea-arranque/tarea-arranque.component';
 import { TallerUnoComponent } from './components/taller-uno/taller-uno.component';
+import { TallerDosComponent } from './components/taller-dos/taller-dos.component';
 
 
 @NgModule({
-  declarations: [TareaArranqueComponent, TallerUnoComponent],
+  declarations: [TareaArranqueComponent, TallerUnoComponent, TallerDosComponent],
   imports: [
     CommonModule,
     PublicRoutingModule,
@@ -20,7 +21,8 @@ import { TallerUnoComponent } from './components/taller-uno/taller-uno.component
   ],
   exports:[
     TareaArranqueComponent,
-    TallerUnoComponent
+    TallerUnoComponent,
+    TallerDosComponent
   ]
 })
 export class PublicModule { }
